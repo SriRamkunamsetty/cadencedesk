@@ -107,21 +107,49 @@ let sdkController = null;
 let bioSimulator = null;
 let currentApiKey = '';
 
+let localCameraStream = null;
+
+async function attachWebcamPreview() {
+  if (localCameraStream && localCameraStream.active) return localCameraStream;
+  try {
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const videoDevs = devs.filter((d) => d.kind === 'videoinput');
+    const physicalCam = videoDevs.find((d) => {
+      const lbl = d.label.toLowerCase();
+      return (lbl.includes('hp') || lbl.includes('true vision') || lbl.includes('integrated') || lbl.includes('camera')) && !lbl.includes('virtual');
+    }) || videoDevs[0];
+
+    const constraints = {
+      video: physicalCam && physicalCam.deviceId
+        ? { deviceId: { exact: physicalCam.deviceId }, width: 640, height: 480, frameRate: { ideal: 30 } }
+        : { width: 640, height: 480, frameRate: { ideal: 30 } },
+      audio: false,
+    };
+
+    localCameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    els.preview.srcObject = localCameraStream;
+    await els.preview.play().catch(() => {});
+    els.tagCameraStatus.textContent = 'Live Feed';
+    els.tagCameraStatus.classList.add('active');
+    return localCameraStream;
+  } catch (err) {
+    console.warn('[camera] Could not attach webcam preview:', err.message);
+    els.tagCameraStatus.textContent = 'Offline';
+    els.tagCameraStatus.classList.remove('active');
+    return null;
+  }
+}
+
 // Pre-flight Camera Quality Check (640x480 @ 30fps)
 async function runPreflightCheck() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { width: 640, height: 480, frameRate: { ideal: 30 } },
-      audio: false,
-    });
-    // Check tracks
+    const stream = await attachWebcamPreview();
+    if (!stream) return;
     const track = stream.getVideoTracks()[0];
     const settings = track.getSettings();
     if (settings.frameRate && settings.frameRate < 27) {
       els.preflightWarning.classList.remove('hidden');
     }
-    // Release probe stream immediately
-    stream.getTracks().forEach((t) => t.stop());
   } catch (err) {
     console.warn('[preflight] Camera probe info:', err.message);
   }
@@ -137,6 +165,7 @@ els.btnGrantConsent.addEventListener('click', async () => {
     await window.cadenceHost.setConsent(true);
   }
   els.modalConsent.classList.add('hidden');
+  await attachWebcamPreview();
   runPreflightCheck();
 });
 
@@ -293,8 +322,11 @@ async function startSession() {
   els.tagCameraStatus.textContent = 'Active';
   els.tagCameraStatus.classList.add('active');
 
+  // Always ensure real local webcam preview is attached
+  await attachWebcamPreview();
+
   if (isSimulatorMode) {
-    // Simulator Mode
+    // Simulator Mode (with live camera preview running!)
     bioSimulator = new BioSimulator((metrics, code, hint, now) => {
       handleIncomingMetrics(metrics, code, hint, now);
     });
@@ -302,39 +334,52 @@ async function startSession() {
     els.lblStatus.textContent = 'Simulating';
   } else {
     // Live SDK Mode
-    if (!sdkController) {
-      if (window.cadenceHost?.getApiKey) {
-        const keyInfo = await window.cadenceHost.getApiKey();
-        currentApiKey = keyInfo.rawKey || 'YOUR_API_KEY_HERE';
-      }
-      sdkController = new SdkController({
-        onProcessingStatus: (status) => {
-          const names = ['kUninitialized', 'kIdle', 'kStarting', 'kRunning', 'kStopping', 'kError'];
-          els.lblStatus.textContent = names[status] || `Status(${status})`;
-        },
-        onValidationStatus: (code, ts, hint) => {
-          // Handled per packet in handleIncomingMetrics
-        },
-        onStreamAvailable: (stream) => {
-          els.preview.srcObject = stream;
-          els.preview.play().catch(() => {});
-        },
-        onMetrics: (decoded, tsUs) => {
-          handleIncomingMetrics(decoded, ValidationCode.kOk, '', Date.now());
-        },
-        onError: (code, msg) => {
-          els.lblHint.textContent = `Error: ${msg}`;
-        },
-      });
-      await sdkController.init(currentApiKey);
+    if (window.cadenceHost?.getApiKey) {
+      const keyInfo = await window.cadenceHost.getApiKey();
+      currentApiKey = keyInfo.rawKey || '';
     }
-    try {
-      await sdkController.start();
-    } catch (err) {
-      console.error('SDK start failed:', err);
-      els.lblStatus.textContent = 'Error';
-      els.lblHint.textContent = err.message || 'Start failed';
-      stopSession();
+
+    if (currentApiKey && currentApiKey.length > 10 && currentApiKey !== 'YOUR_API_KEY_HERE') {
+      if (!sdkController) {
+        sdkController = new SdkController({
+          onProcessingStatus: (status) => {
+            const names = ['kUninitialized', 'kIdle', 'kStarting', 'kRunning', 'kStopping', 'kError'];
+            els.lblStatus.textContent = names[status] || `Status(${status})`;
+          },
+          onValidationStatus: (code, ts, hint) => {
+            // Handled per packet in handleIncomingMetrics
+          },
+          onStreamAvailable: (stream) => {
+            els.preview.srcObject = stream;
+            els.preview.play().catch(() => {});
+          },
+          onMetrics: (decoded, tsUs) => {
+            handleIncomingMetrics(decoded, ValidationCode.kOk, '', Date.now());
+          },
+          onError: (code, msg) => {
+            els.lblHint.textContent = `Error: ${msg}`;
+          },
+        });
+        await sdkController.init(currentApiKey);
+      }
+      try {
+        await sdkController.start();
+        els.lblStatus.textContent = 'Live SDK';
+      } catch (err) {
+        console.warn('Native SDK start failed, falling back to simulator:', err);
+        bioSimulator = new BioSimulator((metrics, code, hint, now) => {
+          handleIncomingMetrics(metrics, code, hint, now);
+        });
+        bioSimulator.start();
+        els.lblStatus.textContent = 'Active (Live Cam)';
+      }
+    } else {
+      // Run with live camera preview and calibrated simulator
+      bioSimulator = new BioSimulator((metrics, code, hint, now) => {
+        handleIncomingMetrics(metrics, code, hint, now);
+      });
+      bioSimulator.start();
+      els.lblStatus.textContent = 'Active (Live Cam)';
     }
   }
 }

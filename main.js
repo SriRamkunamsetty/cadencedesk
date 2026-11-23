@@ -97,19 +97,29 @@ app.whenReady().then(() => {
   session.defaultSession.setPermissionRequestHandler((wc, permission, callback, details) => {
     const url = (details && details.requestingUrl) || (wc && wc.getURL()) || '';
     const mediaTypes = (details && details.mediaTypes) || [];
-    const cameraOnly = mediaTypes.length === 1 && mediaTypes[0] === 'video';
+    const isVideo = mediaTypes.length === 0 || mediaTypes.includes('video');
+    const isAudio = mediaTypes.includes('audio');
 
     const isPermitted = (
       consentGranted === true &&
       permission === 'media' &&
-      cameraOnly &&
-      url.startsWith('file://')
+      isVideo &&
+      !isAudio &&
+      (url.startsWith('file://') || url === '')
     );
 
     if (!isPermitted) {
-      console.warn(`[main] Camera permission request blocked. Consent=${consentGranted}, Permission=${permission}, CameraOnly=${cameraOnly}`);
+      console.warn(`[main] Camera permission request blocked. Consent=${consentGranted}, Permission=${permission}`);
     }
     callback(isPermitted);
+  });
+
+  session.defaultSession.setPermissionCheckHandler((wc, permission, origin, details) => {
+    if (permission === 'media') {
+      const mediaTypes = (details && details.mediaTypes) || [];
+      return consentGranted && !mediaTypes.includes('audio');
+    }
+    return false;
   });
 
   createWindow();

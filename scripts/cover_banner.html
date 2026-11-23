@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CadenceDesk Cover Banner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      width: 1200px;
+      height: 500px;
+      overflow: hidden;
+      background: #07090e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+      color: #f1f5f9;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 44px 56px;
+    }
+
+    /* Ambient Background Mesh */
+    .ambient-glow-left {
+      position: absolute;
+      top: -80px;
+      left: -80px;
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, rgba(6, 182, 212, 0.08) 50%, transparent 70%);
+      pointer-events: none;
+      filter: blur(40px);
+    }
+    .ambient-glow-right {
+      position: absolute;
+      bottom: -100px;
+      right: -60px;
+      width: 580px;
+      height: 580px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.06) 50%, transparent 70%);
+      pointer-events: none;
+      filter: blur(40px);
+    }
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Left Branding Column */
+    .brand-col {
+      z-index: 2;
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #38bdf8;
+      width: fit-content;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    h1.title {
+      font-size: 54px;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 40%, #93c5fd 80%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      font-size: 18px;
+      line-height: 1.45;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .pill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .tag {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+    .tag.highlight {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+
+    /* Right UI Card Showcase */
+    .preview-card {
+      z-index: 2;
+      width: 500px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .trust-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* Metric Grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .metric-box {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .metric-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: #64748b;
+    }
+    .metric-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #f8fafc;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .metric-unit {
+      font-size: 12px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+    .val-pulse { color: #38bdf8; }
+    .val-resp { color: #34d399; }
+    .val-hrv { color: #a78bfa; }
+    .val-halo { color: #fbbf24; }
+
+    /* Canvas Oscilloscope Mock */
+    .waveform-display {
+      background: #020617;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 10px;
+      height: 100px;
+      position: relative;
+      overflow: hidden;
+    }
+    .waveform-svg {
+      width: 100%;
+      height: 100%;
+    }
+    .wave-legend {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      display: flex;
+      gap: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .dot-cyan { width: 6px; height: 6px; border-radius: 50%; background: #06b6d4; box-shadow: 0 0 6px #06b6d4; }
+    .dot-green { width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+    /* Footer Trust Line */
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #64748b;
+      padding-top: 4px;
+    }
+    .privacy-tag {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow-left"></div>
+  <div class="ambient-glow-right"></div>
+  <div class="grid-lines"></div>
+
+  <!-- Left Column: Big Brand Narrative -->
+  <div class="brand-col">
+    <div class="badge-pill">
+      <span class="pulse-dot"></span>
+      Presage SmartSpectra SDK Challenge
+    </div>
+    <h1 class="title">CadenceDesk</h1>
+    <p class="subtitle">
+      Signal-Gated Bio-Adaptive Focus & Ergonomics Workstation powered by contactless camera sensing.
+    </p>
+
+    <div class="pill-tags">
+      <div class="tag highlight">🫁 Breath-Hold Pause Halo</div>
+      <div class="tag highlight">👁️ Blink Cadence Guard</div>
+      <div class="tag">🛡️ Speech Guard (600ms)</div>
+      <div class="tag">🔒 100% On-Device RAM</div>
+      <div class="tag">⚡ Dual-Trace Oscilloscope</div>
+      <div class="tag">✅ 15 Vitest Unit Tests</div>
+    </div>
+  </div>
+
+  <!-- Right Column: Polished UI Glassmorphism Card -->
+  <div class="preview-card">
+    <div class="card-header">
+      <div class="card-title">
+        <span>⚡</span> LIVE BIO-SIGNAL TELEMETRY
+      </div>
+      <div class="trust-badge">SIGNAL TRUST: VERIFIED</div>
+    </div>
+
+    <!-- Dual Trace Waveform Window -->
+    <div class="waveform-display">
+      <div class="wave-legend">
+        <div class="legend-item"><span class="dot-cyan"></span> Arterial PPG</div>
+        <div class="legend-item"><span class="dot-green"></span> Respiration</div>
+      </div>
+      <svg class="waveform-svg" viewBox="0 0 460 100" preserveAspectRatio="none">
+        <!-- Grid horizontal lines -->
+        <line x1="0" y1="25" x2="460" y2="25" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+        <line x1="0" y1="50" x2="460" y2="50" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+        <line x1="0" y1="75" x2="460" y2="75" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+
+        <!-- Green Respiration Smooth Slow Wave (lower) -->
+        <path d="M 0,70 Q 55,50 115,70 T 230,70 T 345,70 T 460,70" 
+              fill="none" stroke="#10b981" stroke-width="2.5" opacity="0.85" />
+
+        <!-- Cyan Pulse PPG Dicrotic Wave (upper) -->
+        <path d="M 0,35 Q 15,35 25,18 Q 30,38 35,30 Q 42,35 55,35 Q 70,35 80,18 Q 85,38 90,30 Q 97,35 110,35 Q 125,35 135,18 Q 140,38 145,30 Q 152,35 165,35 Q 180,35 190,18 Q 195,38 200,30 Q 207,35 220,35 Q 235,35 245,18 Q 250,38 255,30 Q 262,35 275,35 Q 290,35 300,18 Q 305,38 310,30 Q 317,35 330,35 Q 345,35 355,18 Q 360,38 365,30 Q 372,35 385,35 Q 400,35 410,18 Q 415,38 420,30 Q 427,35 440,35 Q 455,35 460,25" 
+              fill="none" stroke="#06b6d4" stroke-width="2.2" />
+      </svg>
+    </div>
+
+    <!-- Real-Time Metrics -->
+    <div class="metric-grid">
+      <div class="metric-box">
+        <span class="metric-label">Pulse Rate</span>
+        <span class="metric-value val-pulse">72 <span class="metric-unit">BPM • 98%</span></span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-label">Respiration Rate</span>
+        <span class="metric-value val-resp">14 <span class="metric-unit">BR/min</span></span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-label">Heart Rate Var</span>
+        <span class="metric-value val-hrv">58 <span class="metric-unit">ms RMSSD</span></span>
+      </div>
+      <div class="metric-box">
+        <span class="metric-label">Ergonomic Guard</span>
+        <span class="metric-value val-halo">Optimal <span class="metric-unit">Halo Idle</span></span>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <span>Framework: <strong>Electron 43 + Node 24</strong></span>
+      <span class="privacy-tag">🔒 Zero Disk Storage • Volatile RAM</span>
+    </div>
+  </div>
+</body>
+</html>
