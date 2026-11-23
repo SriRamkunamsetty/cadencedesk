@@ -24,6 +24,7 @@
   "devDependencies": {
     "electron": "43.8.1",
     "esbuild": "^0.25.0",
+    "playwright": "^1.65.1",
     "vitest": "^3.0.7"
   },
   "build": {

@@ -25,6 +25,21 @@ Unlike traditional passive dashboards that merely display uncalibrated numbers, 
 
 ---
 
+## Demo Walkthrough Video
+
+A complete 48-second video walkthrough of CadenceDesk is included directly in this repository:
+* **Direct Video File:** [`CadenceDesk_Demo_Video.mp4`](CadenceDesk_Demo_Video.mp4)
+* **Raw Video Link:** [Download or Watch on GitHub](https://raw.githubusercontent.com/SriRamkunamsetty/cadencedesk/main/CadenceDesk_Demo_Video.mp4)
+
+*Scenes captured in the video:*
+1. **0:00 - 0:08:** In-app Privacy & Camera Consent Gate with 100% on-device disclosures.
+2. **0:08 - 0:15:** Dual-Trace 60 FPS Oscilloscope streaming live Arterial Pulse Pleth (Cyan) and Chest Respiration (Emerald).
+3. **0:15 - 0:32:** Warm-Up progress (Face 0s, Pulse 12s, Breathing 30s) and ambient breath audio toggle.
+4. **0:32 - 0:40:** Breath-Hold Pause detection triggering the gentle peripheral recovery halo.
+5. **0:40 - 0:48:** Session Stop and Session Signal Trust Receipt modal with "Full Trust" scoring and JSON export.
+
+---
+
 ## System Architecture
 
 ```

@@ -31,7 +31,10 @@ Instead of building a passive medical dashboard that displays uncalibrated numbe
 
 ## Demo
 
-<!-- Embed your demo video link below (e.g. YouTube, Vimeo, or Loom) -->
+**Direct Video Walkthrough:** [Watch CadenceDesk Demo Video (MP4)](https://raw.githubusercontent.com/SriRamkunamsetty/cadencedesk/main/CadenceDesk_Demo_Video.mp4)
+
+You can also embed this video directly via YouTube or Loom:
+<!-- Replace YOUR_VIDEO_ID with your YouTube/Loom ID if you upload there -->
 {% embed https://youtu.be/YOUR_DEMO_VIDEO_ID %}
 
 *Key Demo Timestamps:*

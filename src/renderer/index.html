@@ -276,6 +276,18 @@
     <span>⚠️ Camera frame rate is below 28 FPS. Position in good lighting for reliable SmartSpectra optical measurement.</span>
   </div>
 
+  <script>
+    if (!window.cadenceHost) {
+      window.cadenceHost = {
+        setConsent: async (g) => ({ success: true, consentGranted: g }),
+        getApiKey: async () => ({ isConfigured: true, rawKey: 'SIMULATOR_TEST_MODE' }),
+        exportReceipt: async (json) => {
+          console.log('[browser-host] Session receipt exported:', json);
+          return { success: true };
+        }
+      };
+    }
+  </script>
   <script src="../../dist/renderer.bundle.js"></script>
 </body>
 </html>
