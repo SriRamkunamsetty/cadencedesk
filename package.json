@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "description": "CadenceDesk — Signal-Gated Bio-Adaptive Ergonomics & Focus Workstation powered by Presage SmartSpectra SDK",
+  "author": "SriRam Kunamsetty <mohansriramkunamsetty@gmail.com>",
+  "contributors": [
+    {
+      "name": "SriRam Kunamsetty",
+      "email": "mohansriramkunamsetty@gmail.com",
+      "url": "https://github.com/SriRamKunamsetty"
+    }
+  ],
   "main": "main.js",
   "scripts": {
     "build": "esbuild src/renderer/renderer.js --bundle --outfile=dist/renderer.bundle.js --platform=browser --format=iife --log-level=warning",

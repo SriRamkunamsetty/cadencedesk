@@ -47,12 +47,12 @@ Instead of building a passive medical dashboard that displays uncalibrated numbe
 
 ## Code
 
-**GitHub Repository:** [https://github.com/YOUR_USERNAME/cadencedesk](https://github.com/YOUR_USERNAME/cadencedesk)
+**GitHub Repository:** [https://github.com/SriRamKunamsetty/cadencedesk](https://github.com/SriRamKunamsetty/cadencedesk)
 
 ### Setup & Reproducible Execution:
 ```bash
 # 1. Clone repository
-git clone https://github.com/YOUR_USERNAME/cadencedesk.git
+git clone https://github.com/SriRamKunamsetty/cadencedesk.git
 cd cadencedesk
 
 # 2. Install dependencies (Node 24 LTS recommended)

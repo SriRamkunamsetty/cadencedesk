@@ -96,7 +96,7 @@ Unlike traditional passive dashboards that merely display uncalibrated numbers, 
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/YOUR_USERNAME/cadencedesk.git
+git clone https://github.com/SriRamKunamsetty/cadencedesk.git
 cd cadencedesk
 npm install
 ```
@@ -135,6 +135,13 @@ CadenceDesk was engineered under strict privacy-by-design standards:
 
 ---
 
+## Author & Contributors
+
+* **SriRam Kunamsetty** ([@SriRamKunamsetty](https://github.com/SriRamKunamsetty)) — *Lead Developer & Architect*
+  * Email: [mohansriramkunamsetty@gmail.com](mailto:mohansriramkunamsetty@gmail.com)
+
+---
+
 ## License
 
-Apache-2.0 © 2026 CadenceDesk Project
+Apache-2.0 © 2026 SriRam Kunamsetty
