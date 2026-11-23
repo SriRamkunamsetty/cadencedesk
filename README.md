@@ -2,6 +2,8 @@
 **Signal-Gated Bio-Adaptive Ergonomics & Focus Workstation**  
 *Powered by the [Presage SmartSpectra SDK](https://smartspectra.presagetech.com/) for the [DEV Community Presage Challenge](https://dev.to/challenges/presage-2026-11-04).*
 
+![CadenceDesk Workstation](cover_banner.png)
+
 ---
 
 > [!NOTE]  
