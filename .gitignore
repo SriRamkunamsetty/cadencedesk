@@ -19,3 +19,9 @@ coverage/
 smartspectra-repo/
 research/
 recordings/
+
+# Internal planning and draft documents (kept local only)
+COMPETITIVE_ANALYSIS.md
+DEMO_SCRIPT.md
+IMPLEMENTATION_PLAN.md
+SUBMISSION_DRAFT.md
