@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; worker-src 'self' blob:; media-src 'self' blob:; connect-src 'self' https://*.presagetech.com;">
+  <title>CadenceDesk — Signal-Gated Bio-Adaptive Focus & Ergonomics</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Persistent Non-Medical Disclaimer Banner -->
+  <aside class="disclaimer-banner" role="note" aria-label="Non-medical general wellness tool">
+    <span class="badge-pill">GENERAL WELLNESS ONLY</span>
+    <span>CadenceDesk is a focus-ergonomics and wellness companion. Not a medical device; does not diagnose, treat, or guide clinical decisions.</span>
+  </aside>
+
+  <!-- Top App Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">CD</div>
+      <div class="brand-text">
+        <h1>CadenceDesk</h1>
+        <p class="subtitle">Signal-Gated Bio-Adaptive Workstation</p>
+      </div>
+    </div>
+
+    <!-- Trust & Quality Header Bar -->
+    <div class="header-badges">
+      <div class="status-chip" id="chip-mode">Mode: <strong id="lbl-mode">Live Camera</strong></div>
+      <div class="status-chip" id="chip-status">Status: <strong id="lbl-status">Idle</strong></div>
+      <div class="status-chip" id="chip-trust">Signal Trust: <strong id="lbl-trust">0%</strong></div>
+      <div class="status-chip hint-chip" id="chip-hint">Guidance: <span id="lbl-hint">Awaiting Camera</span></div>
+    </div>
+
+    <div class="header-actions">
+      <button id="btn-toggle-mode" class="btn btn-secondary btn-sm" title="Switch between real camera and calibrated simulator">Switch to Simulator</button>
+      <button id="btn-toggle-audio" class="btn btn-secondary btn-sm" title="Toggle breath-swept ambient audio synthesizer">🔊 Audio: Off</button>
+      <button id="btn-receipt" class="btn btn-secondary btn-sm" disabled>Trust Receipt</button>
+      <button id="btn-start" class="btn btn-primary">Start Sensing</button>
+      <button id="btn-stop" class="btn btn-danger" disabled>Stop</button>
+    </div>
+  </header>
+
+  <!-- Main Workstation Layout -->
+  <main class="workstation-container">
+    <!-- Left Column: Video Preview & Ergonomic Radars -->
+    <section class="left-panel">
+      <!-- Camera Preview Box -->
+      <div class="card preview-card">
+        <div class="card-header">
+          <h2>Optical Sensing Feed</h2>
+          <span class="tag-live" id="tag-camera-status">Offline</span>
+        </div>
+        <div class="preview-wrapper" id="preview-wrapper">
+          <video id="preview" autoplay muted playsinline></video>
+          <!-- Multi-face or Paused Overlay -->
+          <div class="video-overlay hidden" id="video-overlay">
+            <div class="overlay-content">
+              <span class="warning-icon">⚠️</span>
+              <p id="overlay-msg">Sensing Paused for Privacy</p>
+            </div>
+          </div>
+          <!-- Breath-Hold Recovery Halo -->
+          <div class="breath-halo hidden" id="breath-halo" aria-hidden="true">
+            <div class="halo-circle"></div>
+            <p class="halo-text">Inhale gently...</p>
+          </div>
+        </div>
+        <div class="preview-footer">
+          <small id="txt-fps">Capture: 640×480 @ 30fps</small>
+          <small id="txt-privacy">100% On-Device FFI · Telemetry Off</small>
+        </div>
+      </div>
+
+      <!-- Baseline Calibration Status Card -->
+      <div class="card baseline-card">
+        <div class="card-header">
+          <h3>Personal Calm Baseline</h3>
+          <span class="badge-subtle" id="badge-baseline">Calibrating (0%)</span>
+        </div>
+        <div class="baseline-metrics">
+          <div class="baseline-item">
+            <span class="metric-label">Calm Pulse</span>
+            <span class="metric-val" id="val-base-pulse">—</span>
+            <small>BPM</small>
+          </div>
+          <div class="baseline-item">
+            <span class="metric-label">Calm Respiration</span>
+            <span class="metric-val" id="val-base-breath">—</span>
+            <small>BR/min</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Dual-Trace Oscilloscope & Metric Radars -->
+    <section class="right-panel">
+      <!-- Live 60fps Dual-Trace Canvas -->
+      <div class="card canvas-card">
+        <div class="card-header">
+          <div class="canvas-titles">
+            <h2>Dual-Trace Optical Oscilloscope</h2>
+            <span class="trace-legend">
+              <span class="legend-dot cyan"></span> Arterial Pulse Pleth
+              <span class="legend-dot emerald"></span> Chest Respiration Trace
+            </span>
+          </div>
+          <span class="badge-subtle" id="badge-fps-monitor">60 FPS</span>
+        </div>
+        <div class="canvas-container">
+          <canvas id="waveform-canvas" width="800" height="280"></canvas>
+        </div>
+      </div>
+
+      <!-- Ergonomics & Vitals Metric Grid -->
+      <div class="metrics-grid">
+        <!-- Metric 1: Pulse Rate -->
+        <div class="card metric-tile" id="tile-pulse">
+          <div class="tile-top">
+            <span class="tile-title">Pulse Rate</span>
+            <span class="tile-status" id="status-pulse">12s Warm-Up</span>
+          </div>
+          <div class="tile-body">
+            <span class="tile-number" id="num-pulse">—</span>
+            <span class="tile-unit">BPM</span>
+          </div>
+          <div class="tile-delta" id="delta-pulse">Baseline: --</div>
+        </div>
+
+        <!-- Metric 2: Respiration Rate -->
+        <div class="card metric-tile" id="tile-breath">
+          <div class="tile-top">
+            <span class="tile-title">Respiration Rate</span>
+            <span class="tile-status" id="status-breath">30s Warm-Up</span>
+          </div>
+          <div class="tile-body">
+            <span class="tile-number" id="num-breath">—</span>
+            <span class="tile-unit">BR/min</span>
+          </div>
+          <div class="tile-delta" id="delta-breath">Speech Guard: Active</div>
+        </div>
+
+        <!-- Metric 3: Blink Cadence & Eye Comfort -->
+        <div class="card metric-tile" id="tile-blink">
+          <div class="tile-top">
+            <span class="tile-title">Blink Cadence</span>
+            <span class="tile-status" id="status-blink">Optimal</span>
+          </div>
+          <div class="tile-body">
+            <span class="tile-number" id="num-blink">15</span>
+            <span class="tile-unit">/min</span>
+          </div>
+          <div class="tile-delta" id="delta-blink">Last blink: 0s ago</div>
+        </div>
+
+        <!-- Metric 4: Breath-Hold Pause Radar -->
+        <div class="card metric-tile" id="tile-apnea">
+          <div class="tile-top">
+            <span class="tile-title">Breath Cadence</span>
+            <span class="tile-status" id="status-apnea">Steady</span>
+          </div>
+          <div class="tile-body">
+            <span class="tile-number" id="num-holds">0</span>
+            <span class="tile-unit">pauses</span>
+          </div>
+          <div class="tile-delta" id="delta-variance">Trace variance: 1.00</div>
+        </div>
+      </div>
+
+      <!-- HRV & Autonomic Balance Footer -->
+      <div class="card hrv-card">
+        <div class="hrv-content">
+          <span class="hrv-title">Autonomic Balance (HRV RMSSD):</span>
+          <span class="hrv-value" id="val-hrv">Locking (60s)...</span>
+          <span class="hrv-badge" id="badge-hrv-stable">Awaiting Lock</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- In-App Consent & Privacy Modal (Shown on First Launch) -->
+  <div class="modal-backdrop" id="modal-consent">
+    <div class="modal-box" role="dialog" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <h2 id="modal-title">CadenceDesk Privacy & Camera Consent</h2>
+      </div>
+      <div class="modal-body">
+        <p>CadenceDesk uses the <strong>Presage SmartSpectra SDK</strong> to measure subtle optical skin color oscillations and chest movement for focus and ergonomics.</p>
+        
+        <div class="consent-rules">
+          <div class="rule-item">
+            <span class="rule-icon">🔒</span>
+            <div>
+              <strong>100% On-Device Processing</strong>
+              <p>Raw webcam frames are processed strictly in RAM. Video is never saved to disk, recorded, or sent to the cloud.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <span class="rule-icon">🛡️</span>
+            <div>
+              <strong>Multi-Face Privacy Shield</strong>
+              <p>Sensing pauses automatically if a second person enters the frame or if the window is minimized.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <span class="rule-icon">🌐</span>
+            <div>
+              <strong>Network Transparency</strong>
+              <p>Network access is used only to authenticate your Presage API key. Telemetry is explicitly disabled. Automated SDK 3.5.0 background check-ins are discarded unread.</p>
+            </div>
+          </div>
+        </div>
+
+        <label class="consent-checkbox-label">
+          <input type="checkbox" id="chk-consent">
+          <span>I am 18+, I am the only person in camera view, and I consent to live on-device optical sensing for general wellness.</span>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-grant-consent" class="btn btn-primary" disabled>Grant Consent & Launch</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Trust Receipt Modal -->
+  <div class="modal-backdrop hidden" id="modal-receipt">
+    <div class="modal-box receipt-box" role="dialog" aria-labelledby="receipt-title">
+      <div class="modal-header">
+        <h2 id="receipt-title">Session Signal Trust Receipt</h2>
+        <span class="tier-badge" id="receipt-tier-badge">Full Trust</span>
+      </div>
+      <div class="modal-body">
+        <p class="receipt-desc" id="receipt-explanation">High-fidelity session with comprehensive biometric coverage.</p>
+
+        <div class="receipt-stats-grid">
+          <div class="receipt-stat">
+            <span class="lbl">Duration</span>
+            <strong id="rcpt-duration">0s</strong>
+          </div>
+          <div class="receipt-stat">
+            <span class="lbl">Valid Frames</span>
+            <strong id="rcpt-valid-frames">100%</strong>
+          </div>
+          <div class="receipt-stat">
+            <span class="lbl">Pulse Coverage</span>
+            <strong id="rcpt-pulse-cov">0%</strong>
+          </div>
+          <div class="receipt-stat">
+            <span class="lbl">Breath Coverage</span>
+            <strong id="rcpt-breath-cov">0%</strong>
+          </div>
+          <div class="receipt-stat">
+            <span class="lbl">Breath-Hold Pauses</span>
+            <strong id="rcpt-holds">0</strong>
+          </div>
+          <div class="receipt-stat">
+            <span class="lbl">Blink Reminders</span>
+            <strong id="rcpt-blinks">0</strong>
+          </div>
+        </div>
+
+        <div class="receipt-verification">
+          <small>✓ On-Device FFI · ✓ Telemetry Disabled · ✓ Zero Cloud Video · ✓ Honest Frame Reporting</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-export-receipt" class="btn btn-secondary">Export JSON</button>
+        <button id="btn-purge-session" class="btn btn-danger">Purge Memory</button>
+        <button id="btn-close-receipt" class="btn btn-primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pre-Flight Camera Diagnostic Banner (if FPS < 28) -->
+  <div class="preflight-banner hidden" id="preflight-warning">
+    <span>⚠️ Camera frame rate is below 28 FPS. Position in good lighting for reliable SmartSpectra optical measurement.</span>
+  </div>
+
+  <script src="../../dist/renderer.bundle.js"></script>
+</body>
+</html>

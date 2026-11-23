@@ -1,0 +1,67 @@
+{
+  "name": "cadencedesk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CadenceDesk — Signal-Gated Bio-Adaptive Ergonomics & Focus Workstation powered by Presage SmartSpectra SDK",
+  "main": "main.js",
+  "scripts": {
+    "build": "esbuild src/renderer/renderer.js --bundle --outfile=dist/renderer.bundle.js --platform=browser --format=iife --log-level=warning",
+    "start": "npm run build && electron .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@smartspectra/node-sdk": "latest"
+  },
+  "devDependencies": {
+    "electron": "43.8.1",
+    "esbuild": "^0.25.0",
+    "vitest": "^3.0.7"
+  },
+  "build": {
+    "appId": "com.presagetech.cadencedesk",
+    "productName": "CadenceDesk",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**",
+      "dist/**",
+      "node_modules/**",
+      "!node_modules/@smartspectra/node-sdk-*/**",
+      "!node_modules/@smartspectra/node-sdk/scripts/**",
+      "!node_modules/@smartspectra/node-sdk/test/**",
+      "!node_modules/@smartspectra/node-sdk/samples/**"
+    ],
+    "win": {
+      "target": "nsis",
+      "extraResources": [
+        {
+          "from": "node_modules/@smartspectra/node-sdk-win32-${arch}/",
+          "to": "smartspectra"
+        }
+      ]
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "NSCameraUsageDescription": "CadenceDesk needs camera access for contactless vital signs and ergonomics."
+      },
+      "extraResources": [
+        {
+          "from": "node_modules/@smartspectra/node-sdk-darwin-${arch}/",
+          "to": "smartspectra"
+        }
+      ]
+    },
+    "linux": {
+      "target": "AppImage",
+      "extraResources": [
+        {
+          "from": "node_modules/@smartspectra/node-sdk-linux-${arch}/",
+          "to": "smartspectra"
+        }
+      ]
+    }
+  }
+}
